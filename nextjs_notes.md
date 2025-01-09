@@ -68,3 +68,61 @@ create ``id`` folder wrapped with ``[]``
 
 To provide links in nextjs we use the ``Link`` component
 ``<Link href="/route">Text</Link>``
+
+
+Complex Object destructuring:
+```
+const peter = {name: "Swaelee", song: "just to save you", movie: "spiderman", lesson: {Subject: "javascript", Support: "nav"}};
+
+
+ const {lesson: {Subject, Support}} = peter;
+console.log(Subject);
+
+console.log(Support);
+```
+
+**``Layout.tsx file``**
+The layout.tsx file is used as the parent file whereby each file/route is displayed a child component. Useful for placing headers,footers or user interface elements.
+
+
+If you want to specify a specific navbar or user interface element for specific pages we use the following:
+Example: specific navbar for dashboard pages:
+Always ensure that this file is called page.tsx;
+
+```
+- dashboard
+    - layout.tsx
+    - analytics
+    - users
+```
+In the above code, the ``layout.tsx`` file will be used.
+the layout.tsx file should have the following:
+```
+import React from "react"
+const Layout = ({children}: {children: React.ReactNode})=>{
+    return (
+        <div>
+            <h1>Dashboard</h1>
+            {children}
+        </div>
+    )
+}
+```
+or:
+```
+import React from "react"
+const Layout = ({children}: {children: React.ReactNode})=>{
+    return (
+        <div>
+            <h1>Dashboard</h1>
+            {children}
+        </div>
+    )
+}
+```
+## Route Groups
+or better if you want to group several route pages to have a specific navar do the following: 
+
+Create 2 folders in paranthesis:
+(root) : add layout.tsx file
+(dashboard) : add layout.tsx
