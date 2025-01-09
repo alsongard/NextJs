@@ -121,8 +121,51 @@ const Layout = ({children}: {children: React.ReactNode})=>{
 }
 ```
 ## Route Groups
-or better if you want to group several route pages to have a specific navar do the following: 
+or better if you want to group several route pages to have a specific navBar do the following: 
 
 Create 2 folders in paranthesis:
 (root) : add layout.tsx file
 (dashboard) : add layout.tsx
+
+
+
+
+## throw error:
+``throw new Error('Not implemented yet');``
+
+## Loading UIs 
+loading progress for data being fetched from a database or an API.
+To do this simply create loading.tsx file in app folder. and paste the following:
+``rfce``
+
+
+## data fetching
+in react/traditional way we use eseeffect:
+
+```
+async function Home(){
+    const response = awaity fetch("https://jsonplaceholder.typicode.com/albums");
+    if (!response.ok) throw new Error("Failed to fetch data");
+
+
+    const albums = await response.json();
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols">
+            {albums.map((album: {id: number, title: string}))} =>{
+                <div  key={album.id} className="bg-white shadow-md rounded-lg p-4 transition t..">
+                   <h3>{album.title}</h3>
+                   <p>Album ID: {album.id}</p>
+                </div>
+            }
+        </div>
+    )}
+
+```
+
+## Server Sidre Strategies:
+- Static site generation (SSG): the site is generated once deployed
+, not suitable for websites that update frequently. Documentation and marketing pages, blogs
+
+- Icremental Static Generation (ISG):
+
+ 
