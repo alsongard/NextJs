@@ -1,9 +1,35 @@
+export default async function Page() {
+  const data = await fetch('https://api.vercel.app/blog')
+  const posts = await data.json()
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  )
+}
+
+
+/*
+
 import Link from "next/link";
+import  type { GetServerSideProps } from "next";
+
+export async function GetServerSideProps(){
+  const {events_categories} = await import("./data.json");
+  console.log(events_categories);
+  return  {
+    props:{
+      data: events_categories
+    }
+  }
+}
+
 export default function Home() {
   return (
     <div>
       <main className="mt-[150px]">
-
         <div className="mb-[50px]">
           <Link href="/event/london">
           <img />
@@ -34,5 +60,8 @@ export default function Home() {
 
       </footer>
     </div>
-  );
-}
+  )
+};
+
+
+*/
