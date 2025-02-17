@@ -114,6 +114,11 @@ export const metadata: Metadata = {
     description: "Welcome to Next.js",
 };
 
+//other than that you can use:
+export const metadata = {
+  title: "Home",
+  description: "Welcome to NextJS"
+}
 export default function Page()
 {
     return "..."
@@ -133,3 +138,97 @@ export default function Loading()
 {
     return (<h1>Loading...</h1>)
 }
+```
+
+// requesting users data we do the following:
+create a library directory / in the root folder of the webappName
+To fetch data from the following [website](https://jsonplaceholder.typicode.com/users)
+create an async function
+```
+export default async function GetAllUserData()
+{
+  const res = await fetch("");
+
+  return (
+    <div>
+      <p>Let's all return</p>
+    </div>
+  )
+}
+```
+
+### **Fetching fundamentals
+- fetch data on the server using server components
+- fetch data in parallel to minimize waterfall and loading time: in this the dat ais fetched in parallel, the next data to be fetched does not have to wait for the first data to be completely fetched. 
+- For layouts and pages, fetch data where it's used, this means NextJS will automatically dedupe  request in a tree(does not send duplicate request once the fetch has been already sent)
+- Using Loading UI, streaming and Suspense to progressively render a page and show a result to the user while the rest of the content loads :
+    loading UI refers to loading page
+
+
+
+
+### **Library**
+The lib folder is used for creating functions that can be reused by multiple pages. This is similar to how we declare components in React that can be reused in multiple pages.
+once you have already declared your function in a fileName.tsx in lib directory, you then import the function to your file(page.tsx) where you need it.
+Example:
+The function getAllUsers() in getAllUsers.tsx is used to fetch data from the following [link]()
+User/page.tsx
+```
+import getAllUsers from "@lib/getAllUsers";
+
+{
+  const userData : Promise<enterType> = getAllUsers();
+}
+```
+
+### **Type definition**
+To create a typedefinition for the data note:
+- the next-nev.d.ts is a type definition file(next-env.d.ts)
+create a type.d.ts file and :
+```
+type User = {
+
+    "id": number,
+
+    "name": string,
+
+    "username": string,
+
+    "email": string,
+
+    "address": {
+
+      "street": string,
+
+      "suite": string,
+
+      "city": string,
+
+      "zipcode": string,
+
+      "geo": {
+
+        "lat": string,
+
+        "lng": string
+
+      }
+
+    },
+
+    "phone": string,
+
+    "website":string,
+
+    "company": {
+
+      "name": string,
+
+      "catchPhrase": string,
+
+      "bs": string
+
+    }
+
+}
+```
