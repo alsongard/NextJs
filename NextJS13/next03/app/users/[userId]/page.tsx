@@ -8,7 +8,17 @@ type Params = {
     }
 };
 
-
+// generate metadata for each userpage done dynamically
+// create a funciton
+export async function generateMetadata({params}: Params)
+{
+    const userData = getUserEach(params.userId);
+    const user = await userData;
+   return {
+        title: user.name,
+        description: `This are the post for the user : ${user.name}`
+    }
+}
 
 export default async function UserEachPage({params} : Params) {
     // requesting data in parallel
@@ -25,7 +35,8 @@ export default async function UserEachPage({params} : Params) {
     // const [user, userPost] = await Promise.all([userEachData, userPostData]);
 
     // assigning data to var
-    const userData : Promise<User> = getUserEach(params.userId);
+    const userData : Promise<User> = getUserEach(params.userId); 
+    // since we are only getting a single user we use the type description User and not an array
     const userPostData : Promise<Post[]> = getUserPost(params.userId);
 
     // const [user, userPosts] = await Promise.all([userData, userPostData]);
