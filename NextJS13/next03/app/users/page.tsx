@@ -3,6 +3,7 @@ import getAllUsers from "@/lib/getAllUsers";
 import Link  from "next/link";
 export const metadata : Metadata = {
     title : "Users",
+    description: "users page"
 }
 
 
