@@ -22,9 +22,9 @@ type User = {
     }
 }
 
-type  Post = {
-  userId:	Number,
-  id: Number,
+type Post = {
+  userId:	number,
+  id: number,
   title : string,
   body:	string
 }
