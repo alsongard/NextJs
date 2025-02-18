@@ -6,16 +6,16 @@ export const metadata : Metadata = {
 }
 
 
-export default async function UserPage() {
+export default async function UserPage(){
   const usersData: Promise<User[]> = getAllUsers()
   const users = await usersData;
   console.log(`Type of users is : ${typeof(users)}`);
 
   const userContent = users.map((userItem)=>{
     return (
-      <div>
+      <>
         <p key={userItem.id}> <Link href={`/users/${userItem.id}`}> {userItem.name}</Link></p>
-      </div>
+      </>
     )
   })
   const myElement = (
