@@ -21,3 +21,10 @@ type User = {
       "bs": string
     }
 }
+
+type  Post = {
+  userId:	Number,
+  id: Number,
+  title : string,
+  body:	string
+}
