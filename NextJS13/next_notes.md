@@ -140,6 +140,13 @@ export default function Loading()
 }
 ```
 
+### **Fetching fundamentals
+- fetch data on the server using server components
+- fetch data in parallel to minimize waterfall and loading time: in this the dat ais fetched in parallel, the next data to be fetched does not have to wait for the first data to be completely fetched. 
+- For layouts and pages, fetch data where it's used, this means NextJS will automatically dedupe  request in a tree(does not send duplicate request once the fetch has been already sent)
+- Using Loading UI, streaming and Suspense to progressively render a page and show a result to the user while the rest of the content loads :
+    loading UI refers to loading page
+
 // requesting users data we do the following:
 create a library directory / in the root folder of the webappName
 To fetch data from the following [website](https://jsonplaceholder.typicode.com/users)
@@ -157,21 +164,12 @@ export default async function GetAllUserData()
 }
 ```
 
-### **Fetching fundamentals
-- fetch data on the server using server components
-- fetch data in parallel to minimize waterfall and loading time: in this the dat ais fetched in parallel, the next data to be fetched does not have to wait for the first data to be completely fetched. 
-- For layouts and pages, fetch data where it's used, this means NextJS will automatically dedupe  request in a tree(does not send duplicate request once the fetch has been already sent)
-- Using Loading UI, streaming and Suspense to progressively render a page and show a result to the user while the rest of the content loads :
-    loading UI refers to loading page
-
-
-
 
 ### **Library**
 The lib folder is used for creating functions that can be reused by multiple pages. This is similar to how we declare components in React that can be reused in multiple pages.
 once you have already declared your function in a fileName.tsx in lib directory, you then import the function to your file(page.tsx) where you need it.
 Example:
-The function getAllUsers() in getAllUsers.tsx is used to fetch data from the following [link]()
+The function getAllUsers() in getAllUsers.tsx is used to fetch data from the following [link](https://jsonplaceholder.typicode.com/users)
 User/page.tsx
 ```
 import getAllUsers from "@lib/getAllUsers";
@@ -187,48 +185,177 @@ To create a typedefinition for the data note:
 create a type.d.ts file and :
 ```
 type User = {
-
     "id": number,
-
     "name": string,
-
     "username": string,
-
     "email": string,
-
     "address": {
-
       "street": string,
-
       "suite": string,
-
       "city": string,
-
       "zipcode": string,
-
       "geo": {
-
         "lat": string,
-
         "lng": string
-
       }
-
     },
-
     "phone": string,
-
     "website":string,
-
     "company": {
-
       "name": string,
-
       "catchPhrase": string,
-
       "bs": string
-
     }
+}
+```
+### **Mapping over the data fetched**
+```
+async function UserPage()
+{
+  // get the data
+  const userData : Promise<User[]> = getUsersData(); // User[] is a datatype definition *.d.ts
+
+  const users = userData;
+
+  const userContent = users.map((userItem)=>{
+    return (
+      <div>
+        <p key={userItem.id}> <Link href={`/users/${userItem.id}`}> {userItem.name}</Link></p>
+      </div>
+    )
+  })
+
+  // map over data
+  return (
+    <div>
+    {userContent}
+    </div>
+  )
+}
+```
+
+### **Dynamic Pages**
+Create a directory that has the same name as the parameter that will be used for the dynamic pages
+[userId]  : parameter that will be  given *(my observation provided the folder has double brackets in it this should work)*
+within the directory create a page.tsx with the following
+```
+// get parameters
+type Params = {
+  params :{
+    userId: string
+  }
+}
+// route parameters given are always of string datatype
+
+
+// import the needed function from lib directory
+
+import getUserEach from "@lib/getUserEach.tsx";
+async function displayUserData({params}: Params)
+{
+  const userData : Promise<User> = getUserEach(params.userId);
+  const userPostData : Promise<Post[]> = getUserPost(params.userPost);
+
+  const [user, userPosts] = await promise.all([userData, userPostData]);
+
+  return (
+    <div>
+      <h1>Users details for {user}</h1>
+      <Suspense fallback={<h2>Loading....</h2>}>
+        {/* we use a component*/}
+      </Suspense>
+    </div>
+  )
+}
+```
+Now to fetch the data based on the userId create a file in lib directory and :
+getEachUser.tsx
+```
+async function getUserEach(userId: stirng)
+{
+
+  const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+  // check response
+  if(!res) throw New Error("failed to fetch data");
+  return  res.json()
 
 }
 ```
+getUserPost.tsx
+```
+async function getUserEach(userId: string)
+{
+  const res = await fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
+  // check response
+  if(!res) throw New Error("failed to fetch data");
+  return  res.json()
+
+}
+```
+
+**NOTE: WHEN PASSING THE DATA TYPE to A PROMISE  IF YOU EXPECT A SINGLE OBJECT PASS IN THE VARIABLE FOR THE DATATYPE, IF YOU RECEIVE AN ARRAY PASS IN DATATYPE[].**
+
+
+### **Generating dynmaic metadata**
+Given you have multiple users and each user has some information to display dynamic metadata use, 
+the following:
+the description in the metadata is used for Search Engine Optimization and social media previews. 
+search engine use the meta description which appears in search results right after the search title.
+When you share your page to social platforms they use this description for creating links
+```
+<meta name="description" content="all users displayed">
+```
+
+To generate the metadata:
+```
+export async function generateMetadata({params}: Params)
+{
+  // getuserdata
+  const userData = getUserEach(params.userId);
+  const user = await userData;
+
+  return {
+    title: user.name,
+    description: `user post for ${user.name}`
+  }
+  
+}
+```
+
+
+# chapter 4 
+Methods of rendering 
+SSG-SSR-ISR
+SSG: statis server side generation
+
+SSR: server side rendering
+ISR: incremental server side rendering
+
+by default when fetching data, data is fetched using SSR(server side rendering). 
+If the data fetched is fetched changes randomly set cache to no-store
+
+lib/getUserEach.tsx
+```
+export default async function getUserEach()
+{
+  cost res = await fetch(url, {cache: 'no-store'})
+  if (!res.ok) throw new Error("failed to fetch data");
+
+  return res.json()
+}
+```
+
+ISR(incremental server rendering)
+for dynamic data. if the data being fetched changes often, it's better to use ISR.
+lib/getUserEach.tsx
+```
+export default async function getUserEach()
+{
+  const res = fetch("url", {next: {revalidate: 60}})
+  if (!res.ok) throw new Error("failed to fetch data");
+  return res.json()
+}
+```
+Rather than setting the revalidate in your fetch() statement, we can use the ``export const revalidate = valueinSeconds`` : ``export const revalidate = 600`` in page.tsx or layout.tsx in the file that uses the data.
+
+this is known as [Segment-level caching]()
