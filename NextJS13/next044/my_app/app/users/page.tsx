@@ -27,7 +27,9 @@ export default async function User() {
         {userContent}  
       </div>
 
-      
+      <div>
+        <h3 className="myhome">Click to go back to <Link className="theLink" href="/">Home Page</Link>  </h3>
+      </div>
     </div>  
   )
 }

@@ -2,19 +2,28 @@ import getUserDetails from '@/lib/getUserDetails';
 import getUserPost from '@/lib/getUserPost';
 import UserPostComponent from './component/userComponent';
 import { Suspense } from 'react';
+
 type Params = {
     params: {
         userId: string
     }
 }
-export const metadata = {
-    title: "user details",
-    description: "user details page"
+
+//  to generate dynamic metadata
+export async function generateMetadata({params}: Params)
+{
+    const data = getUserDetails(params.userId);
+    const userData = await data;
+
+    return {
+        title: userData.name,
+        description: `User post for user ${userData.name}`
+    }
 }
 
 export default async function UserDetails({params} : Params) {
 
-    console.log(`this is the userId passed as the routeParameter: ${params.userId}`);
+    // console.log(`this is the userId passed as the routeParameter: ${params.userId}`);
 
 
     const data : Promise<User> = getUserDetails(params.userId);
@@ -36,7 +45,7 @@ export default async function UserDetails({params} : Params) {
 
     return (
         <div>
-            <h2>UserDetails </h2>
+            <br/>
             {userDetailsContent}
             <br/>
             <div>

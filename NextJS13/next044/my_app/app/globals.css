@@ -109,3 +109,25 @@ a {
   display: flex;
   flex-direction: column;
 }
+.myhome{
+  text-align: center;
+  position: absolute;
+  bottom:10px;
+  left:40%
+}
+.theLink{
+  color: rgb(147, 147, 228);
+}
+header{
+  display: flex;
+  flex-direction: flex-row;
+  justify-content: space-between;
+  padding-right: 50px;
+}
+.navbar{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width:200px;
+  list-style: none;
+}
