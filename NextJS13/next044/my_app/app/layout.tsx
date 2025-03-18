@@ -1,3 +1,4 @@
+import Header from './components/header'
 import './globals.css'
 import Link from 'next/link'
 export const metadata = {
@@ -13,19 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <header>
-        <div>
-          <h2>Users</h2>
-        </div>
-
-        <div>
-          <ul className="navbar">
-            <li><h2><Link href="/">Home</Link></h2> </li>
-            <li><h2><Link href="/users">Users</Link> </h2></li>
-          </ul>
-        </div>
-          
-        </header>
+        <Header/>
         {children}</body>
     </html>
   )
