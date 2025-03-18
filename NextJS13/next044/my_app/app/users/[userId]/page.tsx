@@ -12,7 +12,7 @@ type Params = {
 //  to generate dynamic metadata
 export async function generateMetadata({params}: Params)
 {
-    const data = getUserDetails(params.userId);
+    const data: Promise<User> =  getUserDetails(params.userId);
     const userData = await data;
 
     return {
@@ -28,6 +28,7 @@ export default async function UserDetails({params} : Params) {
 
     const data : Promise<User> = getUserDetails(params.userId);
     const postData : Promise<Post[]> = getUserPost(params.userId);
+
     const userDetails = await data;
     // console.log("this is userdetails : ");
     // console.log(userDetails);
