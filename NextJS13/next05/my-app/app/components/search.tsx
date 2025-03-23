@@ -3,26 +3,24 @@
 import { useState, FormEvent, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
-
-
-
 export default function Search() {
-    const [formData, setFormData] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     const router = useRouter();
     function handleChange(event: React.ChangeEvent<HTMLInputElement>)
     {
         const {value} = event.target;
-        setFormData(()=>{
+        setSearchTerm(()=>{
             return  value;
         })
 
     };
     async function handleSubmit( e: FormEvent<HTMLFormElement>)
     {
+        console.log(searchTerm);
         e.preventDefault();
-        setFormData('');
-        router.push(`/${formData}/`); // pushes the formData to the url
+        router.push(`/${searchTerm}/`); // pushes the formData to the url
+        setSearchTerm('');
     }
     
     return (
@@ -30,7 +28,7 @@ export default function Search() {
             <form onSubmit={handleSubmit} className="w-50 flex justify-center md:justify-between">
                 <input
                     type='text'
-                    value={formData}
+                    value={searchTerm}
                     onChange={handleChange}
                     className="bg-white p-2 w-80 text-xl rounded-xl"
                 />
