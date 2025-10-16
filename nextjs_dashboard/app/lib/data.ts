@@ -10,7 +10,7 @@ import {
 import { formatCurrency } from './utils';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-
+import pool from './db';
 export async function fetchRevenue() {
   try {
     // Artificially delay a response for demo purposes.
@@ -19,70 +19,115 @@ export async function fetchRevenue() {
     // console.log('Fetching revenue data...');
     // await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const data = await sql<Revenue[]>`SELECT * FROM revenue`;
+    // const data = await sql<Revenue[]>`SELECT * FROM revenue`;
+    const data  = await pool.query("SELECT * FROM revenue;");
+    console.log("data");
+    console.log(data);
 
     // console.log('Data fetch completed after 3 seconds.');
 
-    return data;
+    return data.rows;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch revenue data.');
   }
 }
 
-export async function fetchLatestInvoices() {
-  try {
-    const data = await sql<LatestInvoiceRaw[]>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
-      FROM invoices
-      JOIN customers ON invoices.customer_id = customers.id
-      ORDER BY invoices.date DESC
-      LIMIT 5`;
+export async function fetchLatestInvoices()
+{
+	try 
+	{
+		// const data = await sql<LatestInvoiceRaw[]>`
+		//   SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
+		//   FROM invoices
+		//   JOIN customers ON invoices.customer_id = customers.id
+		//   ORDER BY invoices.date DESC
+		//   LIMIT 5`;
+		const data = await pool.query(
+			`
+				SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
+				FROM invoices
+				JOIN customers ON invoices.customer_id = customers.id
+				ORDER BY invoices.date DESC
+				LIMIT 5;
+			`
+		);
+		console.log(`data.rows  on fetchLatestInvoices`);
+		console.log(data.rows);
 
-    const latestInvoices = data.map((invoice) => ({
-      ...invoice,
-      amount: formatCurrency(invoice.amount),
-    }));
-    return latestInvoices;
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch the latest invoices.');
-  }
+
+		const latestInvoices = data.rows.map((invoice:any)=>({
+			...invoice,
+			amount: formatCurrency(invoice.amount),
+		}));
+		return latestInvoices;
+	}
+	catch(error)
+	{
+		console.error('Database Error:', error);
+		throw new Error('Failed to fetch the latest invoices.');
+	}
 }
 
 export async function fetchCardData() {
-  try {
-    // You can probably combine these into a single SQL query
-    // However, we are intentionally splitting them to demonstrate
-    // how to initialize multiple queries in parallel with JS.
-    const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
-    const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
-    const invoiceStatusPromise = sql`SELECT
-         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
-         SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-         FROM invoices`;
+	try 
+	{
+		// You can probably combine these into a single SQL query
+		// However, we are intentionally splitting them to demonstrate
+		// how to initialize multiple queries in parallel with JS.
+		const invoiceCountPromise= await pool.query(`SELECT COUNT(*) FROM invoices;`);
+		const customerCountPromise = await pool.query(`SELECT COUNT(*) FROM customers;`);
+		const invoiceStatusPromise = await pool.query(`SELECT
+			SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
+			SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
+			FROM invoices;`);
+		
+		console.log("invoiceCountPromise")
+		console.log(invoiceCountPromise);
+		console.log("invoiceCountPromise.rows");
+		console.log(invoiceCountPromise.rows);
 
-    const data = await Promise.all([
-      invoiceCountPromise,
-      customerCountPromise,
-      invoiceStatusPromise,
-    ]);
+		console.log("customerCountPromise");
+		console.log(customerCountPromise);
+		console.log("customerCountPromise.rows");
+		console.log(customerCountPromise.rows);
 
-    const numberOfInvoices = Number(data[0][0].count ?? '0');
-    const numberOfCustomers = Number(data[1][0].count ?? '0');
-    const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
-    const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
 
-    return {
-      numberOfCustomers,
-      numberOfInvoices,
-      totalPaidInvoices,
-      totalPendingInvoices,
-    };
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch card data.');
-  }
+		console.log("invoiceCountPromise");
+		console.log(invoiceStatusPromise);
+		console.log("invoiceStatusPromise.rows");
+		console.log(invoiceStatusPromise.rows);
+
+
+
+		
+
+		const data = await Promise.all([
+		invoiceCountPromise.rows,
+		customerCountPromise.rows,
+		invoiceStatusPromise.rows,
+		]);
+
+		console.log(`this is data`);
+		console.log(data);
+
+		const numberOfInvoices = Number(data[0][0].count ?? '0');
+		const numberOfCustomers = Number(data[1][0].count ?? '0');
+		const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
+		const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
+
+		return {
+		numberOfCustomers,
+		numberOfInvoices,
+		totalPaidInvoices,
+		totalPendingInvoices,
+		};
+	} 
+	catch (error) 
+	{
+		console.error('Database Error:', error);
+		throw new Error('Failed to fetch card data.');
+	}
 }
 
 const ITEMS_PER_PAGE = 6;
